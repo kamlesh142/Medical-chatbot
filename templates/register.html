@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Register</title>
+
+  <!-- Bootstrap CSS -->
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #007bff, #00c6ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: "Poppins", sans-serif;
+      color: #fff;
+    }
+
+    .register-card {
+      background-color: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      width: 360px;
+      padding: 2rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+
+    .register-card:hover {
+      transform: translateY(-5px);
+    }
+
+    h4 {
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-control {
+      border-radius: 25px;
+      border: none;
+      padding: 0.75rem 1rem;
+      background-color: rgba(255, 255, 255, 0.8);
+      color: #333;
+      font-size: 0.95rem;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+      outline: none;
+    }
+
+    .btn-primary {
+      border-radius: 25px;
+      background-color: #0069d9;
+      border: none;
+      font-weight: 500;
+      transition: transform 0.2s ease;
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      background-color: #0056b3;
+    }
+
+    a.small {
+      display: block;
+      margin-top: 0.5rem;
+      color: #e0e0e0;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    a.small:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="register-card">
+    <h4>📝 Register</h4>
+    <form method="POST" action="/register">
+      <input class="form-control mb-3" type="text" name="fullname" placeholder="Full Name" required>
+      <input class="form-control mb-3" type="email" name="username" placeholder="Email" required>
+      <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
+      <button class="btn btn-primary w-100 mb-2">Register</button>
+      <a href="/login" class="small">Already have an account? Login</a>
+    </form>
+  </div>
+</body>
+</html>

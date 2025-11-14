@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Medical Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" rel="stylesheet">
+
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      background-color: #f8f9fa;
+    }
+
+    .chat {
+      margin-top: 50px;
+    }
+
+    .card {
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      height: 80vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .msg_head {
+      background-color: #007bff;
+      color: white;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      padding: 15px;
+    }
+
+    .msg_card_body {
+      flex: 1;
+      overflow-y: auto;
+      background-color: #e9ecef;
+      padding: 15px;
+    }
+
+    .card-footer {
+      background-color: #fff;
+      border-top: 1px solid #dee2e6;
+      border-bottom-left-radius: 15px;
+      border-bottom-right-radius: 15px;
+      padding: 10px;
+    }
+
+    .msg_cotainer, .msg_cotainer_send {
+      background-color: #fff;
+      border-radius: 25px;
+      padding: 10px 15px;
+      position: relative;
+      max-width: 70%;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.3s ease;
+      word-wrap: break-word;
+    }
+
+    .msg_cotainer_send {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .msg_time, .msg_time_send {
+      position: absolute;
+      bottom: -15px;
+      right: 10px;
+      font-size: 0.75rem;
+      color: gray;
+    }
+
+    .user_img_msg {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin: 0 10px;
+    }
+
+    .type_msg {
+      border: none;
+      border-radius: 20px;
+      background-color: #f1f1f1;
+      padding: 10px 15px;
+      outline: none;
+    }
+
+    .send_btn {
+      border: none;
+      background-color: #007bff;
+      color: white;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send_btn:hover {
+      background-color: #0056b3;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .bot-typing i {
+      color: #888;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container chat">
+    <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3">
+      <div class="card">
+
+        <!-- Header -->
+        <div class="card-header msg_head d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="rounded-circle" width="45" height="45" alt="bot">
+            <div class="ml-2">
+              <h6 class="mb-0">Medical Chatbot</h6>
+              <small>Ask me anything!</small>
+            </div>
+          </div>
+          <div>
+            <a href="/history" class="btn btn-outline-light btn-sm mr-2">History</a>
+            <a href="/logout" class="btn btn-outline-danger btn-sm">Logout</a>
+          </div>
+        </div>
+
+        <!-- Chat Body -->
+        <div id="messageContainer" class="card-body msg_card_body"></div>
+
+        <!-- Footer / Input -->
+        <div class="card-footer">
+          <form id="messageForm" class="input-group">
+            <input type="text" id="text" name="msg" placeholder="Type your message..." autocomplete="off" class="form-control type_msg" required />
+            <div class="input-group-append">
+              <button type="submit" id="send" class="input-group-text send_btn">
+                <i class="fas fa-location-arrow"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const messageContainer = document.getElementById("messageContainer");
+    const form = document.getElementById("messageForm");
+    const input = document.getElementById("text");
+    const sendBtn = document.getElementById("send");
+
+    function scrollToBottom() {
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    function sanitize(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function appendMessage(html) {
+      messageContainer.insertAdjacentHTML("beforeend", html);
+      scrollToBottom();
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const rawText = input.value.trim();
+      if (!rawText) return;
+
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const safeText = sanitize(rawText);
+
+      const userHtml = `
+        <div class="d-flex justify-content-end mb-4">
+          <div class="msg_cotainer_send">${safeText}
+            <span class="msg_time_send">${time}</span>
+          </div>
+          <img src="https://cdn-icons-png.flaticon.com/512/9775/9775776.png" class="user_img_msg" alt="user">
+        </div>`;
+      appendMessage(userHtml);
+      input.value = "";
+      sendBtn.disabled = true;
+
+      // Bot typing animation
+      const typingHtml = `
+        <div class="d-flex justify-content-start mb-4 bot-typing">
+          <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg" alt="bot">
+          <div class="msg_cotainer"><i>Bot is typing...</i></div>
+        </div>`;
+      appendMessage(typingHtml);
+
+      // Send message to Flask backend
+      fetch("/get", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({ msg: rawText })
+      })
+      .then(res => res.text())
+      .then(data => {
+        document.querySelector(".bot-typing").remove();
+        const botReply = sanitize(data);
+        const botHtml = `
+          <div class="d-flex justify-content-start mb-4">
+            <img src="https://cdn-icons-png.flaticon.com/512/387/387569.png" class="user_img_msg" alt="bot">
+            <div class="msg_cotainer">${botReply}
+              <span class="msg_time">${time}</span>
+            </div>
+          </div>`;
+        appendMessage(botHtml);
+      })
+      .catch(err => {
+        document.querySelector(".bot-typing").remove();
+        appendMessage(`<div class="text-danger text-center"><small>⚠️ Server error: ${sanitize(err.message)}</small></div>`);
+      })
+      .finally(() => sendBtn.disabled = false);
+    });
+
+    // Submit on Enter
+    input.addEventListener("keypress", function (e) {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.dispatchEvent(new Event("submit"));
+      }
+    });
+  </script>
+</body>
+</html>
